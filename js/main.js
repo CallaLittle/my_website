@@ -1,7 +1,5 @@
 /* Calla Little, 2016 */
 
-
-
 //create list of objects to hold city data
 var cityData = [
 	{
@@ -26,6 +24,18 @@ var cityData = [
 ];
 
 
+function createTable() {
+	//create a table
+	$('#mydiv').append('<table id=\'cityTable\'>');
+
+	//add column headers
+	$('#cityTable').append('<tr><th>City<th>Population');
+
+	//iterate through the city data array to print each name and population
+	for(var i = 0; i < cityData.length; i++) {
+		$('#cityTable').append('<tr><td>' + cityData[i].name + '<td>' + cityData[i].pop)
+	};
+}
 
 //function to add a new column defining city size to the table
 function addColumns(cityPop){
@@ -94,16 +104,49 @@ function addEvents(){
 
 
 
-//create a table
-$('#mydiv').append('<table id=\'cityTable\'>');
+//send a request to the server for the data
+function jQueryAjax() {
 
-//add column headers
-$('#cityTable').append('<tr><th>City<th>Population');
+	$.ajax('../data/MegaCities.geojson', {dataType: 'json', success: callback});
 
-//iterate through the city data array to print each name and population
-for(var i = 0; i < cityData.length; i++) {
-	$('#cityTable').append('<tr><td>' + cityData[i].name + '<td>' + cityData[i].pop)
 };
 
-addColumns(cityData);
-addEvents();
+//handle the returned data
+function callback(response) {
+
+	var returnedData = response;
+	console.log(returnedData);
+};
+
+
+function initialize()  {
+
+	createTable();
+	addColumns(cityData);
+	addEvents();
+	jQueryAjax();
+	debugAjax();
+
+}
+
+
+//initilize the functions when the document is ready
+$(document).ready(initialize);
+
+//cannot access the callback data outside of the callback function
+console.log(returnedData);
+
+
+//handles the data received from the server by appending it to the div
+function debugCallback(response){
+	
+	$('#mydiv').append('GeoJSON data: ' + JSON.stringify(response));
+};
+
+//sends a request to the server for the json data
+function debugAjax(){
+	
+	$.ajax("../data/MegaCities.geojson", {dataType: "json", success: debugCallback});
+
+};
+
